@@ -8,6 +8,7 @@ import {
   ScrollRestoration,
 } from "remix";
 import type { LinksFunction, MetaFunction, LoaderFunction } from "remix";
+import {raygunClient} from "~/raygun";
 
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 import { getUser } from "./session.server";
@@ -27,6 +28,12 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
+  try {
+    throw new Error("error from server-side remix");
+  } catch (e: any) {
+    raygunClient.send(e);
+  }
+
   return json<LoaderData>({
     user: await getUser(request),
   });
